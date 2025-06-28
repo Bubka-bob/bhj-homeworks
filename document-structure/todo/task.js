@@ -1,27 +1,45 @@
-      const tooltips = document.querySelectorAll('.has-tooltip');
+ // Найдем форму и кнопку
+  const taskForm = document.querySelector('.tasks__control');
+  const taskInput = document.querySelector('#task__input');
+  const taskList = document.querySelector('#tasks__list');
 
-      tooltips.forEach(function(tooltipLink) {
-      	tooltipLink.addEventListener('click', function(e) {
-      		e.preventDefault(); // Отменяет переход по ссылке
+  // Обработчик отправки формы
+  taskForm.addEventListener('submit', (event) => {
+    event.preventDefault(); // предотвращаем перезагрузку страницы
+    addNewTask();
+  });
 
-      		// Убедимся, что ранее открытая подсказка скрылась
-      		const oldTooltip = document.querySelector('.tooltip');
-      		if (oldTooltip) {
-      			oldTooltip.parentNode.removeChild(oldTooltip);
-      		}
+  // Функция для добавления новой задачи
+  function addNewTask() {
+    const taskText = taskInput.value.trim();
+    if (taskText === "") return; // ничего не делаем, если поле пустое
 
+    // Создаем элемент списка (LI)
+    const taskItem = document.createElement('li');
+    taskItem.classList.add('task');
 
-      		let tooltip = document.createElement('div');
-      		tooltip.classList.add('tooltip');
-      		tooltip.textContent = tooltipLink.title; // Показываем содержимое атрибута title
-      		document.body.appendChild(tooltip);
+    // Внутри LI создаем два дочерних элемента: заголовок и иконку удаления
+    const taskTitle = document.createElement('div');
+    taskTitle.classList.add('task__title');
+    taskTitle.textContent = taskText;
 
-      		// Определяем позицию подсказки относительно родительского контейнера
-      		let linkRect = tooltipLink.getBoundingClientRect();
-      		tooltip.style.left = `${linkRect.left + window.scrollX}px`;
-      		tooltip.style.top = `${linkRect.bottom + window.scrollY}px`;
+    const taskRemoveBtn = document.createElement('a');
+    taskRemoveBtn.href = '#'; // используем анкор, чтобы ссылка работала корректно
+    taskRemoveBtn.classList.add('task__remove');
+    taskRemoveBtn.innerHTML = '×'; // символ удаления (×)
 
-      		tooltip.classList.add('tooltip_active');
+    // добавляем слушателя на удаление задачи
+    taskRemoveBtn.addEventListener('click', () => {
+      taskList.removeChild(taskItem); // удаляем элемент из списка
+    });
 
-      	});
-      });
+    // Собираем элементы вместе
+    taskItem.appendChild(taskTitle);
+    taskItem.appendChild(taskRemoveBtn);
+
+    // Добавляем задачу в список
+    taskList.appendChild(taskItem);
+
+    // Очищаем поле ввода
+    taskInput.value = "";
+  }
